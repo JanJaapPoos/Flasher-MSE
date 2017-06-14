@@ -138,4 +138,4 @@ Dsol <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a5
 Dtur <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50turD,sl=0.1,sr=50000)) )   
 Dbll <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50bllD,sl=0.1,sr=50000)) )   
 
-save.image("w:\\IMARES\\IJmuiden\\afdeling\\projecten\\data poor mixed fisheries\\JRC\\biology_and_seletivity_basic_data.Rdata")
+save.image("w:\\IMARES\\IJmuiden\\afdeling\\projecten\\data poor mixed fisheries\\JRC\\biology_and_selectivity_basic_data.Rdata")
