@@ -84,28 +84,28 @@ turbot   <- FLPar("linf"=55,"k"=0.38, "t0"=0, "a"=0.01508/1000,"b"=3.090,"a50"=3
 brill    <- FLPar("linf"=51,"k"=0.43, "t0"=0, "a"=0.02492/1000,"b"=2.857,"L50"=25,"ato95"=1) 
 
 
-plebrp        <- lhEql(lhPar(plaice), m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+plebrp        <- lhEql(lhPar(plaice), m=0.1, spwn=0, range=c(min = 1, max = 10, minfbar = 2, maxfbar = 6, plusgroup = 10))
 plebrp@model  <- srple1@model
 plebrp@params <- srple1@params
 plebrp <- brp(plebrp)
 plefmsy <- c(plebrp@refpts["msy","harvest"])
 ple     <- window(as(plebrp ,"FLStock"), start=an(dimnames(fbar(plebrp)[fbar(plebrp)>plefmsy])$year[1]), end=an(dimnames(fbar(plebrp)[fbar(plebrp)>plefmsy])$year[1]) + 11)
 
-solbrp    <- lhEql(lhPar(sole),   m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+solbrp    <- lhEql(lhPar(sole),   m=0.1, spwn=0, range=c(min = 1, max = 10, minfbar = 2, maxfbar = 6, plusgroup = 10))
 solbrp@model <- srsol1@model
 solbrp@params <- srsol1@params
 solbrp <- brp(solbrp)
 solfmsy <- c(solbrp@refpts["msy","harvest"])
 sol    <- window(as(solbrp ,"FLStock"), start=an(dimnames(fbar(solbrp)[fbar(solbrp)>solfmsy])$year[1]), end=an(dimnames(fbar(solbrp)[fbar(solbrp)>solfmsy])$year[1]) + 11)
 
-turbrp    <- lhEql(lhPar(turbot), m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+turbrp    <- lhEql(lhPar(turbot), m=0.2, spwn=0, range=c(min = 1, max = 10, minfbar = 2, maxfbar = 6, plusgroup = 10))
 turbrp@model <- srtur1@model
 turbrp@params <- srtur1@params
 turbrp <- brp(turbrp)
 turfmsy <- c(turbrp@refpts["msy","harvest"])
 tur    <- window(as(turbrp ,"FLStock"), start=an(dimnames(fbar(turbrp)[fbar(turbrp)>turfmsy])$year[1]), end=an(dimnames(fbar(turbrp)[fbar(turbrp)>turfmsy])$year[1]) + 11)
 
-bllbrp    <- lhEql(lhPar(brill),  m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+bllbrp    <- lhEql(lhPar(brill),  m=0.2, spwn=0, range=c(min = 1, max = 10, minfbar = 2, maxfbar = 6, plusgroup = 10))
 bllbrp@model <- srtur1@model
 bllbrp@params <- srtur1@params
 bllbrp <- brp(bllbrp)
@@ -131,17 +131,17 @@ a50bll80  = log(1 - ((L50ple80/10)/brill["linf"])) / (-brill["k"])
 a50tur100 = log(1 - ((L50ple100/10)/turbot["linf"])) / (-turbot["k"])
 a50bll100 = log(1 - ((L50ple100/10)/brill["linf"])) / (-brill["k"])
 
-selple80 <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50ple80,sl=1,sr=5)) )
-selsol80 <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50sol80,sl=1,sr=10)) )   
+selple80 <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50ple80,sl=1,sr=5)) )
+selsol80 <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50sol80,sl=1,sr=10)) )   
 
-selple100  <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50ple100,sl=1,sr=5)) )   
-selsol100  <-(FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50sol100,sl=1,sr=10)) )
+selple100  <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50ple100,sl=1,sr=5)) )   
+selsol100  <-(FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50sol100,sl=1,sr=10)) )
 
-seltur80 <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50ple80,sl=1,sr=5)) )
-selbll80 <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50sol80,sl=1,sr=10)) )   
+seltur80 <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50ple80,sl=1,sr=5)) )
+selbll80 <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50sol80,sl=1,sr=10)) )   
 
-seltur100  <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50ple100,sl=1,sr=5)) )   
-selbll100  <-(FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50sol100,sl=1,sr=10)) )
+seltur100  <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50ple100,sl=1,sr=5)) )   
+selbll100  <-(FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50sol100,sl=1,sr=10)) )
 
 ################################################################
 # Discarding stuff
@@ -158,10 +158,10 @@ a50solD  = log(1 - (L50solD/sole["linf"])) / (-sole["k"])
 a50turD  = log(1 - (L50turD/turbot["linf"])) / (-turbot["k"])
 a50bllD  = log(1 - (L50bllD/brill["linf"])) / (-brill["k"])
 
-Dple <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50pleD,sl=0.1,sr=50000)) )   
-Dsol <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50solD,sl=0.1,sr=50000)) )
+Dple <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50pleD,sl=0.1,sr=50000)) )   
+Dsol <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50solD,sl=0.1,sr=50000)) )
 
-Dtur <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50turD,sl=0.1,sr=50000)) )   
-Dbll <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50bllD,sl=0.1,sr=50000)) )   
+Dtur <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50turD,sl=0.1,sr=50000)) )   
+Dbll <- (FLife::dnormal(FLQuant(1:10,dimnames=list(age=1:10)),params=FLPar(a1=a50bllD,sl=0.1,sr=50000)) )   
 
 save.image("d://Flasher-MSE/data/biology_and_selectivity_basic_data.Rdata")
