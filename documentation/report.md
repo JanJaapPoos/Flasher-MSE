@@ -14,12 +14,29 @@ Within the FLR framework, FLasher has been developed to be a mixed fisheries pro
 To parameterize a MSE using FLasher based on flatfish stocks in the demersal fisheries of the North Sea 
 
 ## Methods 
-The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea tat are of interest (Gillis et al. 2008): plaice (*Pleuronectes platessa*) and sole (*Solea solea*)  In order to parameterize the MSE  
+### Data
+The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea that are of interest (Gillis et al. 2008): plaice (*Pleuronectes platessa*) and sole (*Solea solea*) are the most valuable species in terms of overal vaue of the catch. In addition, turbot (*Scophthalmus maximus*) and brill (*Scophthalmus rhombus*) are two valuable species for which the overall catch is lower, but the value is high. The life-history characteristics of these species is available in literature, and was collated.
 
+The four flatfish species that in this study are caught by vessels using different gears. Time-series of annual fishing effort and landings for these fleets are available through the STECF website.  
 
 ### Conditioning
+
 ### Hindcasting
 ##Results
+### Data
+
+
+|Species|Linf fem|Linf male|	K female| K male|	Source|
+|---     |--- | --- |  ---|---|---|
+|European plaice|48	|32.6   |0.232	|0.393|	Van Walraven et al. (2010)|
+|Sole	|39.63	|30.98	|0.342	|0.347	|De Veen (1976)|
+|Turbot	|66.7	|44.5	|0.32	|0.44	|Van der Hammen et al. (2013)|
+|Brill	|58.0	|43.3	|0.38	|0.48	|Van der Hammen et al. (2013)|
+					
+					
+					
+
+
 ## References
 - Bedford, B. C., Woolner, L.E., Jones, B. W. (1986) Length-weight relationships for commercial fish species and conversion factors for various presentations. Fisheries research data report No. 10., MAFF Directorate for fisheries research. 41 pp.
 - De Veen J. (1976) On changes in some biological parameters in the North Sea sole (Solea solea L.). ICES Journal of Marine Science 37, 60-90.  
