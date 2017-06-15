@@ -78,25 +78,37 @@ srtur1 <- fmle(srtur,control=list(maxit=3000))
 params(srtur1)
 plot(srtur1)
 
-plaice   <- FLPar("linf"=40,"k"=0.31, "t0"=0, "a"=0.00890,"b"=3.053,"a50"=2.5,"ato95"=1.5)
-sole     <- FLPar("linf"=35,"k"=0.34, "t0"=0, "a"=0.00762,"b"=3.068,"a50"=2,"ato95"=1) 
-turbot   <- FLPar("linf"=55,"k"=0.38, "t0"=0, "a"=0.01508,"b"=3.090,"a50"=3,"ato95"=1) 
-brill    <- FLPar("linf"=51,"k"=0.43, "t0"=0, "a"=0.02492,"b"=2.857,"L50"=25,"ato95"=1) 
+plaice   <- FLPar("linf"=40,"k"=0.31, "t0"=0, "a"=0.00890/1000,"b"=3.053,"a50"=2.5,"ato95"=1.5)
+sole     <- FLPar("linf"=35,"k"=0.34, "t0"=0, "a"=0.00762/1000,"b"=3.068,"a50"=2,"ato95"=1) 
+turbot   <- FLPar("linf"=55,"k"=0.38, "t0"=0, "a"=0.01508/1000,"b"=3.090,"a50"=3,"ato95"=1) 
+brill    <- FLPar("linf"=51,"k"=0.43, "t0"=0, "a"=0.02492/1000,"b"=2.857,"L50"=25,"ato95"=1) 
 
 
 ple     <- lhEql(lhPar(plaice), m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+ple@model <- srple1@model
+ple@params <- srple1@params
+ple <- brp(ple)
 plefmsy <- c(ple@refpts["msy","harvest"])
 ple     <- window(as(ple ,"FLStock"), start=an(dimnames(fbar(ple)[fbar(ple)>plefmsy])$year[1]), end=an(dimnames(fbar(ple)[fbar(ple)>plefmsy])$year[1]) + 11)
 
 sol    <- lhEql(lhPar(sole),   m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+sol@model <- srsol1@model
+sol@params <- srsol1@params
+sol <- brp(sol)
 solfmsy <- c(sol@refpts["msy","harvest"])
 sol    <- window(as(sol ,"FLStock"), start=an(dimnames(fbar(sol)[fbar(sol)>solfmsy])$year[1]), end=an(dimnames(fbar(sol)[fbar(sol)>solfmsy])$year[1]) + 11)
 
 tur    <- lhEql(lhPar(turbot), m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+tur@model <- srtur1@model
+tur@params <- srtur1@params
+tur <- brp(tur)
 turfmsy <- c(tur@refpts["msy","harvest"])
 tur    <- window(as(tur ,"FLStock"), start=an(dimnames(fbar(tur)[fbar(tur)>turfmsy])$year[1]), end=an(dimnames(fbar(tur)[fbar(tur)>turfmsy])$year[1]) + 11)
 
 bll    <- lhEql(lhPar(brill),  m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+bll@model <- srtur1@model
+bll@params <- srtur1@params
+bll <- brp(bll)
 bllfmsy <- c(bll@refpts["msy","harvest"])
 bll    <- window(as(bll ,"FLStock"), start=an(dimnames(fbar(bll)[fbar(bll)>bllfmsy])$year[1]), end=an(dimnames(fbar(bll)[fbar(bll)>bllfmsy])$year[1]) + 11)
 
