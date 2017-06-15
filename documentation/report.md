@@ -15,7 +15,8 @@ To parameterize a MSE using FLasher based on flatfish stocks in the demersal fis
 
 ## Methods 
 ### Data
-The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea that are of interest (Gillis et al. 2008): plaice (*Pleuronectes platessa*) and sole (*Solea solea*) are the most valuable species in terms of overal vaue of the catch. In addition, turbot (*Scophthalmus maximus*) and brill (*Scophthalmus rhombus*) are two valuable species for which the overall catch is lower, but the value is high. The life-history characteristics of these species is available in literature, and was collated.
+The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea that are of interest (Gillis et al. 2008): plaice (*Pleuronectes platessa*) and sole (*Solea solea*) are the most valuable species in terms of overal vaue of the catch. In addition, turbot (*Scophthalmus maximus*) and brill (*Scophthalmus rhombus*) are two valuable species for which the overall catch is lower, but the value is high. The life-history characteristics of these species is available in literature, and was collated. These life-history characteristics incuded the von Bertalanffy growth parameters asymptotic average length Linf and body growth rate coefficient K (year<sup>-1</sup>) 
+
 
 The four flatfish species that in this study are caught by vessels using different gears. Time-series of annual fishing effort and landings for these fleets are available through the STECF website.  
 
@@ -24,7 +25,7 @@ The four flatfish species that in this study are caught by vessels using differe
 ### Hindcasting
 ##Results
 ### Data
-
+The species
 
 |Species|Linf fem|Linf male|	K female| K male|	Source|
 |---     |--- | --- |  ---|---|---|
