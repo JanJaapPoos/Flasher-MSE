@@ -14,7 +14,7 @@ Within the FLR framework, FLasher has been developed to be a mixed fisheries pro
 To parameterize a MSE using FLasher based on flatfish stocks in the demersal fisheries of the North Sea 
 
 ## Methods 
-The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea tat are of interest (Gillis et al. : plaice (Pleuronectes platessa) and sole (Solea solea)  In order to parameterize the MSE  
+The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea tat are of interest (Gillis et al. 2008): plaice (*Pleuronectes platessa*) and sole (*Solea solea*)  In order to parameterize the MSE  
 
 
 ### Conditioning
@@ -23,7 +23,7 @@ The basis of the MSE is a set of stocks that are defined by their life-history c
 ## References
 - Bedford, B. C., Woolner, L.E., Jones, B. W. (1986) Length-weight relationships for commercial fish species and conversion factors for various presentations. Fisheries research data report No. 10., MAFF Directorate for fisheries research. 41 pp.
 - De Veen J. (1976) On changes in some biological parameters in the North Sea sole (Solea solea L.). ICES Journal of Marine Science 37, 60-90.  
-- Gillis,D. M., Rijnsdorp,A.D., and Poos, J. J. 2008. Behavioral inferences from the statistical distribution of commercial catch: patterns of targeting
+- Gillis, D. M., Rijnsdorp, A.D., and Poos, J. J. 2008. Behavioral inferences from the statistical distribution of commercial catch: patterns of targeting
 in the landings of the Dutch beam trawler fleet. Canadian Journal of Fisheries and Aquatic Sciences, 65: 27–37.
 - Grift, R.E., Rijnsdorp, A.D., Barot, S., Heino, M., Dieckmann, U. (2003) Fisheries-induced trends in reaction norms for maturation in North Sea plaice. Marine Ecology Progress Series 257, 247-257.
 - Kell, L. T., Mosqueira, I., Grosjean, P., Fromentin, J-M., Garcia, D., Hillary, R., Jardim, E., Mardle, S., Pastoors, M. A., Poos, J. J., Scott, F., and
