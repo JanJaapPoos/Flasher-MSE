@@ -83,10 +83,24 @@ sole     <- FLPar("linf"=35,"k"=0.34, "t0"=0, "a"=0.00762,"b"=3.068,"a50"=2,"ato
 turbot   <- FLPar("linf"=55,"k"=0.38, "t0"=0, "a"=0.01508,"b"=3.090,"a50"=3,"ato95"=1) 
 brill    <- FLPar("linf"=51,"k"=0.43, "t0"=0, "a"=0.02492,"b"=2.857,"L50"=25,"ato95"=1) 
 
-ple <- window(as(lhEql(lhPar(plaice), m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 20)),"FLStock"), end=10)
-sol <- window(as(lhEql(lhPar(sole),   m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 20)),"FLStock"), end=10)
-tur <- window(as(lhEql(lhPar(turbot), m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 20)),"FLStock"), end=10)
-bll <- window(as(lhEql(lhPar(brill),  m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 20)),"FLStock"), end=10)
+
+ple     <- lhEql(lhPar(plaice), m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+plefmsy <- c(ple@refpts["msy","harvest"])
+ple     <- window(as(ple ,"FLStock"), start=an(dimnames(fbar(ple)[fbar(ple)>plefmsy])$year[1]), end=an(dimnames(fbar(ple)[fbar(ple)>plefmsy])$year[1]) + 11)
+
+sol    <- lhEql(lhPar(sole),   m=0.1, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+solfmsy <- c(sol@refpts["msy","harvest"])
+sol    <- window(as(sol ,"FLStock"), start=an(dimnames(fbar(sol)[fbar(sol)>solfmsy])$year[1]), end=an(dimnames(fbar(sol)[fbar(sol)>solfmsy])$year[1]) + 11)
+
+tur    <- lhEql(lhPar(turbot), m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+turfmsy <- c(tur@refpts["msy","harvest"])
+tur    <- window(as(tur ,"FLStock"), start=an(dimnames(fbar(tur)[fbar(tur)>turfmsy])$year[1]), end=an(dimnames(fbar(tur)[fbar(tur)>turfmsy])$year[1]) + 11)
+
+bll    <- lhEql(lhPar(brill),  m=0.2, spwn=0, range=c(min = 1, max = 15, minfbar = 2, maxfbar = 6, plusgroup = 15))
+bllfmsy <- c(bll@refpts["msy","harvest"])
+bll    <- window(as(bll ,"FLStock"), start=an(dimnames(fbar(bll)[fbar(bll)>bllfmsy])$year[1]), end=an(dimnames(fbar(bll)[fbar(bll)>bllfmsy])$year[1]) + 11)
+
+dimnames(ple) <- dimnames(sol) <- dimnames(tur) <- dimnames(bll) <- list(year=2004:2015)
 
 #set up selectivities for fleets
 
@@ -138,4 +152,4 @@ Dsol <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a5
 Dtur <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50turD,sl=0.1,sr=50000)) )   
 Dbll <- (FLife::dnormal(FLQuant(1:15,dimnames=list(age=1:15)),params=FLPar(a1=a50bllD,sl=0.1,sr=50000)) )   
 
-save.image("w:\\IMARES\\IJmuiden\\afdeling\\projecten\\data poor mixed fisheries\\JRC\\biology_and_selectivity_basic_data.Rdata")
+save.image("d://Flasher-MSE/data/biology_and_selectivity_basic_data.Rdata")
