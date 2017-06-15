@@ -32,12 +32,12 @@ lanbygearyear <- subset(lanbygearyear, year %in% years)
 effbygearyear <- subset(effbygearyear, year %in% years)
 
 # Take a look at the effort
-unique(effbygearyear$regulated.gear)
+#unique(effbygearyear$regulated.gear)
 ggplot(effbygearyear, aes(x=year, y=Effective.Effort)) + geom_line(aes(colour=regulated.gear))
 
 # And the landings
-summary(lanbygearyear)
-ggplot(lanbygearyear, aes(x=year, y=Landings)) + geom_line(aes(colour=regulated.gear)) + facet_wrap(~species, scales="free")
+#summary(lanbygearyear)
+#ggplot(lanbygearyear, aes(x=year, y=Landings)) + geom_line(aes(colour=regulated.gear)) + facet_wrap(~species, scales="free")
 # Brill looks wrong in final year
 
 # Build FLQuant objects of the observed landings and effort
@@ -265,11 +265,8 @@ sol_ass <- ass.stock
 
 # Update initial N in 2004 with assessment
 # And tune to estimated F
-
-n(biols[["ple"]])[,"2004"]
-stock.n(ple_ass)[,"2004"]
-
-stock.n(sol_ass)[,"2004"]
+n(biols[["ple"]])[,"2004"] <- stock.n(ple_ass)[,"2004"]
+n(biols[["sol"]])[,"2004"] <- stock.n(sol_ass)[,"2004"]
 
 fit_years <- 2010:2015
 
@@ -362,6 +359,8 @@ p <- ggplot(pdat, aes(x=year, y=data)) + geom_line(aes(colour=metric))+ facet_gr
 p + xlab("Year") + ylab("Landings")
 
 # Difference between the fits is marginal - prop on sole TR1 is better
+
+ggplot(effbygearyear, aes(x=year, y=Effective.Effort)) + geom_line(aes(colour=regulated.gear))
 
 # Biomass
 tsb <- get_tsb(run_prop[["biols"]][c("ple","sol")])
