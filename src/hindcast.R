@@ -33,7 +33,7 @@ effbygearyear <- subset(effbygearyear, year %in% years)
 
 # Take a look at the effort
 #unique(effbygearyear$regulated.gear)
-ggplot(effbygearyear, aes(x=year, y=Effective.Effort)) + geom_line(aes(colour=regulated.gear))
+#ggplot(effbygearyear, aes(x=year, y=Effective.Effort)) + geom_line(aes(colour=regulated.gear))
 
 # And the landings
 #summary(lanbygearyear)
@@ -377,6 +377,23 @@ f_ple <- pf_ple_bt2 + pf_ple_tr1
 pf_sol_bt2 <- get_f(run_prop, fn=1, cn=2, bn=2, age_range = range(sol)[c("minfbar","maxfbar")])
 pf_sol_tr1 <- get_f(run_prop, fn=2, cn=2, bn=2, age_range = range(sol)[c("minfbar","maxfbar")])
 f_sol <- pf_sol_bt2 + pf_sol_tr1
+
+rec(biols[["sol"]])
+biols[["sol"]]@rec
+biols[["sol"]]@rec@params
+biols[["sol"]]@rec@model
+
+solcpp <- as(biols[["sol"]], "FLBiolcpp")
+
+run_prop[["biols"]][["sol"]]@n
+
+# Save hindcast and SR objects
+fisheries_hind <- run_prop[["fisheries"]]
+biols_hind <- run_prop[["biols"]]
+
+
+save(fisheries_hind, biols_hind, srple1, srsol1, srtur1, FCB, file="../data/hindcast_om.Rdata")
+
 
 
 
