@@ -22,34 +22,34 @@ The basis of the MSE is a set of stocks that are defined by their life-history c
 The asymptotic average length Linf and body growth rate coefficient K (year<sup>-1</sup>) in the von Bertalanffy growth equation used in the simulations are available in literature, and listed below. Because these species exhibit sexual dimorphism in growth, the data is given for males and females separately.
 
 
-| Species         |*L*<sub>inf</sub> female|*L*<sub>inf</sub> male| *K* female| *K* male | Source|
-| ---             | ---                    | ---                  |  ---      | ---      | ---|
-| European plaice | 48	                   | 32.6                 | 0.232     | 0.393    | Van Walraven *et al.* (2010)|
-| Sole	          | 39.63	           | 30.98	          | 0.342     | 0.347	 | De Veen (1976)|
-| Turbot          | 66.7	           | 44.5	          | 0.32      | 0.44	 | Van der Hammen *et al.* (2013)|
-| Brill	          | 58.0                   | 43.3	          | 0.38      | 0.48	 | Van der Hammen *et al.* (2013)|
+| Species  |*L*<sub>inf</sub> female|*L*<sub>inf</sub> male| *K* female| *K* male | Source |
+| ---      | ---                    | ---                  |  ---      | ---      | ---    |
+| Plaice   | 48	                   | 32.6                 | 0.232     | 0.393    | Van Walraven *et al.* (2010) |
+| Sole	   | 39.63	           | 30.98	          | 0.342     | 0.347	 | De Veen (1976) |
+| Turbot   | 66.7	           | 44.5	          | 0.32      | 0.44	 | Van der Hammen *et al.* (2013) |
+| Brill	   | 58.0                   | 43.3	          | 0.38      | 0.48	 | Van der Hammen *et al.* (2013) |
   
 #### The length-weight relationship
 
 The length-weight relationship is defined by *a* and *b* paramaters in a nonlinear power function (length = *a* W <sup>*b*</sup>). These parameters are available in Bedford *et al.* (1986). However, because the units of weights in Bedford *et al.* (1986) are in grams, the resulting weights are divided by 1e3 to convert to kg.
 	
-|Species	| *a*     | *b*   | Source |
-|---            |  ---    | ---   | ---  |
-|European plaice| 0.00890 | 3.053 | Bedford et al. (1986)|
-|Sole	        | 0.00762 | 3.068 | Bedford et al. (1986)|
-|Turbot	        | 0.01508 | 3.090 | Bedford et al. (1986)|
-|Brill	        | 0.02492 | 2.857 | Bedford et al. (1986)|
+| Species  | *a*     | *b*   | Source |
+| ---      |  ---    | ---   | ---  |
+| plaice   | 0.00890 | 3.053 | Bedford et al. (1986)|
+| Sole	   | 0.00762 | 3.068 | Bedford et al. (1986)|
+| Turbot   | 0.01508 | 3.090 | Bedford et al. (1986)|
+| Brill	   | 0.02492 | 2.857 | Bedford et al. (1986)|
 
 #### Maturity
 
 The maturities in the simulations can either be based on the age structured assessments 
 
-| Species         | *L*<sub>50%</sub> (cm) female | *L*<sub>50%</sub> (cm) male | *A*<sub>50%</sub> (year) from ICES  |	Ato95% | *L*<sub>50%</sub> Source | 
-| ---             |	---                | ---                                | ---                            | ---    | ---    |
-| European plaice | 31	                   | ?                                  |	2.5                      | 1.5    |  Grift et al. (2003)|
-| Sole	          |                        |                                    |  2                             | 1      |   | 
-| Turbot	  | 34.2	           | 17.9                               |  3                             | 1      | Van der Hammen et al. (2013) |
-| Brill           | 31.3	           | 18.4                               |                                |        | Van der Hammen et al. (2013) |
+| Species  | *L*<sub>50%</sub> (cm) female | *L*<sub>50%</sub> (cm) male | *A*<sub>50%</sub> (year) from ICES  |	Ato95% | *L*<sub>50%</sub> Source | 
+| ---      |	---                | ---                                | ---                            | ---    | ---    |
+| Plaice   | 31	                   | ?                                  |	2.5                      | 1.5    |  Grift et al. (2003)|
+| Sole	   |                       |                                    |  2                             | 1      |   | 
+| Turbot   | 34.2	           | 17.9                               |  3                             | 1      | Van der Hammen et al. (2013) |
+| Brill    | 31.3	           | 18.4                               |                                |        | Van der Hammen et al. (2013) |
 
 
 #### Selectitivity and discarding 
