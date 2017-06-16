@@ -30,7 +30,8 @@ The asymptotic average length Linf and body growth rate coefficient K (year<sup>
 | Brill	          | 58.0                   | 43.3	          | 0.38      | 0.48	 | Van der Hammen *et al.* (2013)|
   
 #### The length-weight relationship
-- The length-weight relationship is defined by *a* and *b* paramaters in a nonlinear power function (length = *a* W <sup>*b*</sup>). These parameters are available in Bedford *et al.* (1986). However, because the units of weights in Bedford *et al.* (1986) are in grams, the resulting weights are divided by 1e3 to convert to kg.
+
+The length-weight relationship is defined by *a* and *b* paramaters in a nonlinear power function (length = *a* W <sup>*b*</sup>). These parameters are available in Bedford *et al.* (1986). However, because the units of weights in Bedford *et al.* (1986) are in grams, the resulting weights are divided by 1e3 to convert to kg.
 	
 |Species	| *a*     | *b*   | Source |
 |---            |  ---    | ---   | ---  |
@@ -44,18 +45,22 @@ The asymptotic average length Linf and body growth rate coefficient K (year<sup>
 The maturities in the simulations can either be based on the age structured assessments 
 
 | Species         | *L*<sub>50%</sub> (cm) female | *L*<sub>50%</sub> (cm) male | *A*<sub>50%</sub> (year) from ICES  |	Ato95% | *L*<sub>50%</sub> Source | 
-| ---             |	---            | ---                                 | ---                            | ---    | ---    |
-| European plaice | 31	               | Males probably smaller than females |	2.5                           | 1.5    |  Grift et al. (2003)|
-| Sole	          |                                                          |  2                             | 1      |   | 
-| Turbot	  | 34.2	       | 17.9                                |  3                             | 1      | Van der Hammen et al. (2013) |
-| Brill           | 31.3	       | 18.4                                |                                |        | Van der Hammen et al. (2013) |
+| ---             |	---                | ---                                | ---                            | ---    | ---    |
+| European plaice | 31	                   | ?                                  |	2.5                      | 1.5    |  Grift et al. (2003)|
+| Sole	          |                        |                                    |  2                             | 1      |   | 
+| Turbot	  | 34.2	           | 17.9                               |  3                             | 1      | Van der Hammen et al. (2013) |
+| Brill           | 31.3	           | 18.4                               |                                |        | Van der Hammen et al. (2013) |
 
+
+#### Selectitivity and discarding 
 
 
 
 #### Catch and effort time  series
 
-The four flatfish species that in this study are caught by vessels using different gears. Time-series of annual fishing effort and landings for these fleets are available through the STECF website.  
+The four flatfish species that in this study are caught by vessels using different gears. Time-series of annual fishing effort and landings for these fleets are available through the STECF website. The species are mainly caught by BT2 and TR1
+
+  
 
 ### Conditioning
 
@@ -64,6 +69,10 @@ The four flatfish species that in this study are caught by vessels using differe
 ## Results
 					
 					
+## Discussion
+
+
+- *L*<sub>inf</sub> and *K* are assumed fixed in time
 					
 
 
