@@ -16,36 +16,50 @@ To parameterize a MSE using FLasher based on flatfish stocks in the demersal fis
 ## Methods 
 ### Data
 The basis of the MSE is a set of stocks that are defined by their life-history characteristics. There are a number if flstfish stocks in the North Sea that are of interest (Gillis *et al.* 2008): plaice (*Pleuronectes platessa*) and sole (*Solea solea*) are the most valuable species in terms of overal vaue of the catch. In addition, turbot (*Scophthalmus maximus*) and brill (*Scophthalmus rhombus*) are two valuable species for which the overall catch is lower, but the value is high. The life-history characteristics of these species is available in literature, and was collated. These life-history characteristics incuded:
+
 #### Growth
+
 The asymptotic average length Linf and body growth rate coefficient K (year<sup>-1</sup>) in the von Bertalanffy growth equation used in the simulations are available in literature, and listed below. Because these species exhibit sexual dimorphism in growth, the data is given for males and females separately.
 
 
-|Species|Linf fem|Linf male|	K female| K male|	Source|
-|---     |--- | --- |  ---|---|---|
-|European plaice|48	|32.6   |0.232	|0.393|	Van Walraven *et al.* (2010)|
-|Sole	|39.63	|30.98	|0.342	|0.347	|De Veen (1976)|
-|Turbot	|66.7	|44.5	|0.32	|0.44	|Van der Hammen *et al.* (2013)|
-|Brill	|58.0	|43.3	|0.38	|0.48	|Van der Hammen *et al.* (2013)|
+| Species         |*L*<sub>inf<sub> female|*L*<sub>inf<sub> male| *K* female| *K* male|	Source|
+| ---             | ---                   | ---                 |  ---  | ---   | ---|
+| European plaice | 48	                  | 32.6                | 0.232	| 0.393 | Van Walraven *et al.* (2010)|
+| Sole	          | 39.63	          | 30.98	        | 0.342	| 0.347	| De Veen (1976)|
+| Turbot          | 66.7	          | 44.5	        | 0.32	| 0.44	| Van der Hammen *et al.* (2013)|
+| Brill	          | 58.0                  | 43.3	        | 0.38	| 0.48	| Van der Hammen *et al.* (2013)|
   
 #### The length-weight relationship
-- The length-weight relationship is defined by \alpha and \beta paramaters in a nonlinear power function (length = \alpha * W <sup>\beta</sup>). These parameters are available in Bedford *et al.* (1986).
-|Species	| \alpha |	\beta | Source|
-|---|           |---     | ---| --- |
-|European plaice|	0.00890 |	3.053|	Bedford et al. (1986)|
-|Sole	| 0.00762 |	3.068	|Bedford et al. (1986)|
-|Turbot	| 0.01508 |	3.090	|Bedford et al. (1986)|
-|Brill	| 0.02492 |	2.857	|Bedford et al. (1986)|
+- The length-weight relationship is defined by *a* and *b* paramaters in a nonlinear power function (length = *a* W <sup>*b*</sup>). These parameters are available in Bedford *et al.* (1986).
+	
+|Species	| *a*     | *b*   | Source |
+|---            |  ---    | ---   | ---  |
+|European plaice| 0.00890 | 3.053 | Bedford et al. (1986)|
+|Sole	        | 0.00762 | 3.068 | Bedford et al. (1986)|
+|Turbot	        | 0.01508 | 3.090 | Bedford et al. (1986)|
+|Brill	        | 0.02492 | 2.857 | Bedford et al. (1986)|
+
+#### Maturity
+
+| Species         | *L*50% (cm) female | *L*50% (cm) male                    | A50% (year) used in assessment |	Ato95% | Source | 
+| ---             |	---            | ---                                 | ---                            | ---    | ---    |
+| European plaice | 31	               | Males probably smaller than females |	2.5                           | 1.5    |  Grift et al. (2003)|
+| Sole	          |                                                          |  2                             | 1      |   | 
+| Turbot	  | 34.2	       | 17.9                                |  3                             | 1      | Van der Hammen et al. (2013) |
+| Brill           | 31.3	       | 18.4                                |                                |        | Van der Hammen et al. (2013) |
 
 
 
+
+#### Catch and effort time  series
 
 The four flatfish species that in this study are caught by vessels using different gears. Time-series of annual fishing effort and landings for these fleets are available through the STECF website.  
 
 ### Conditioning
 
 ### Hindcasting
-##Results
-### Data
+
+## Results
 					
 					
 					
