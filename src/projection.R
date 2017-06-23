@@ -67,4 +67,37 @@ p + xlab("Year") + ylab("Landings")
 
 
 
+#--------------------------------------------------------------------
+# Set up more projections
+
+
+
+# Single TAC plaice - forgone yield on sole 
+# Single TAC sole - forgone yield on plaice
+# TACs based on 75% (or what ever proportion of total catches is) of MSY
+# Or a joint TAC based on .....
+
+# Need to also condition Turbot
+
+
+# MSY estimated by JJP using the BRP stuff
+
+# For the report:
+# Methods:
+# conditioning of hindcast
+# why are we estimating qs
+# fit to partial landings only - not enough info
+# fit to partial landings and Fbar
+# Recruitment is fixed at estimated recruitment
+# Driven by effort
+
+# Results of hindcast:
+# Compare OP to single species assessment (which is the 'best' estimate of status) and partial landings
+# Differences arise from assessed stock having different weights / maturity / selectivity to those used here
+# Why are plaice and sole different to the assessed stock? Why did we use the LH approach?
+# T&B fine, because they are data poor, but P&S?
+
+
+
+
 

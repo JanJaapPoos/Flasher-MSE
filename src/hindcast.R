@@ -273,8 +273,19 @@ fit_years <- 2010:2015
 # Copy to mess about with 
 fisheries_temp <- fisheries
 
+
+proj_years <- 2005:2015
+
+# Make effort control
+eff_ctrldf <- data.frame(year=rep(proj_years, each=2), quant="effort", fishery=c(1,2), value=NA)
+eff_ctrldf[eff_ctrldf$fishery==1,"value"] <- c(obseff_bt2[,ac(proj_years)])
+eff_ctrldf[eff_ctrldf$fishery==2,"value"] <- c(obseff_tr1[,ac(proj_years)])
+eff_ctrl <- fwdControl(eff_ctrldf)
+eff_ctrl@FCB <- FCB
+
+
 # Function for optim - based on log Qs - stop negative values
-evalQ <- function(log_qs, error_type){
+evalQ <- function(log_qs){
     qs <- exp(log_qs)
     cat("Guess at q:", qs, "\n")
     # Update qs
@@ -297,22 +308,12 @@ evalQ <- function(log_qs, error_type){
     pfhat222 <- get_f(run, 2, 2, 2, age_range=c(2,6))
     fhatsol <- pfhat122 + pfhat222
     # Create error term
-    if (error_type == "prop"){ 
-        error_lan11 <- sum(abs(c(log((lhat11/ obslan_bt2_ple)[,ac(fit_years)])))) 
-        error_lan12 <- sum(abs(c(log((lhat12/ obslan_bt2_sol)[,ac(fit_years)])))) 
-        error_lan21 <- sum(abs(c(log((lhat21/ obslan_tr1_ple)[,ac(fit_years)]))))
-        error_lan22 <- sum(abs(c(log((lhat22/ obslan_tr1_sol)[,ac(fit_years)]))))
-        error_fple <- sum(abs(c(log(fhatple[,ac(fit_years)] / fbar(ple_ass)[,ac(fit_years)]))))
-        error_fsol <- sum(abs(c(log(fhatsol[,ac(fit_years)] / fbar(sol_ass)[,ac(fit_years)]))))
-    }
-    if (error_type == "diff"){ 
-        error_lan11 <- sum(abs(c(((lhat11 - obslan_bt2_ple)[,ac(fit_years)])))) 
-        error_lan12 <- sum(abs(c(((lhat12 - obslan_bt2_sol)[,ac(fit_years)])))) 
-        error_lan21 <- sum(abs(c(((lhat21 - obslan_tr1_ple)[,ac(fit_years)]))))
-        error_lan22 <- sum(abs(c(((lhat22 - obslan_tr1_sol)[,ac(fit_years)]))))
-        error_fple <- sum(abs(c(fhatple[,ac(fit_years)] - fbar(ple_ass)[,ac(fit_years)])))
-        error_fsol <- sum(abs(c(fhatsol[,ac(fit_years)] - fbar(sol_ass)[,ac(fit_years)])))
-    }
+    error_lan11 <- sum(abs(c(log((lhat11/ obslan_bt2_ple)[,ac(fit_years)])))) 
+    error_lan12 <- sum(abs(c(log((lhat12/ obslan_bt2_sol)[,ac(fit_years)])))) 
+    error_lan21 <- sum(abs(c(log((lhat21/ obslan_tr1_ple)[,ac(fit_years)]))))
+    error_lan22 <- sum(abs(c(log((lhat22/ obslan_tr1_sol)[,ac(fit_years)]))))
+    error_fple <- sum(abs(c(log(fhatple[,ac(fit_years)] / fbar(ple_ass)[,ac(fit_years)]))))
+    error_fsol <- sum(abs(c(log(fhatsol[,ac(fit_years)] / fbar(sol_ass)[,ac(fit_years)]))))
     # Sum catch errors to build single error term
     error <- error_lan11 + error_lan12 + error_lan21 + error_lan22 + error_fple + error_fsol
     cat("error: ", error, "\n")
@@ -320,32 +321,39 @@ evalQ <- function(log_qs, error_type){
 }
 
 # Initial value of Q on log scale
-logqinit <-  log(c(c(fisheries[[1]][[1]]@catch.q["alpha",]), c(fisheries[[1]][[2]]@catch.q["alpha",]), c(fisheries[[2]][[1]]@catch.q["alpha",]), c(fisheries[[1]][[2]]@catch.q["alpha",])))
-# Run optim - simple Nelder Mead with max 500 iters
-toptim_prop <- optim(logqinit, evalQ, control=list(trace=1), error_type="prop")
-finalq_prop <- exp(toptim_prop$par)
+logqinit <-  log(c(c(fisheries[[1]][[1]]@catch.q["alpha",]),
+                   c(fisheries[[1]][[2]]@catch.q["alpha",]),
+                   c(fisheries[[2]][[1]]@catch.q["alpha",]),
+                   c(fisheries[[1]][[2]]@catch.q["alpha",])))
+
+# Run a bit of Sim Anneal first
+#toptim_prop <- optim(logqinit, evalQ, method="SANN", control=list(trace=1))
+#logqinit <- toptim_prop$par
+# Then run optim with simple Nelder Mead with max 500 iters
+toptim <- optim(logqinit, evalQ, control=list(trace=1))
+finalq <- exp(toptim$par)
 
 # Project with final values of Q
-catch.q(fisheries_temp[["BT2"]][[1]])["alpha",] <- finalq_prop[1]
-catch.q(fisheries_temp[["BT2"]][[2]])["alpha",] <- finalq_prop[2]
-catch.q(fisheries_temp[["TR1"]][[1]])["alpha",] <- finalq_prop[3]
-catch.q(fisheries_temp[["TR1"]][[2]])["alpha",] <- finalq_prop[4]
-run_prop <- fwd(object=biols, fishery=fisheries_temp, control=eff_ctrl)
+catch.q(fisheries_temp[["BT2"]][[1]])["alpha",] <- finalq[1]
+catch.q(fisheries_temp[["BT2"]][[2]])["alpha",] <- finalq[2]
+catch.q(fisheries_temp[["TR1"]][[1]])["alpha",] <- finalq[3]
+catch.q(fisheries_temp[["TR1"]][[2]])["alpha",] <- finalq[4]
+hind_run <- fwd(object=biols, fishery=fisheries_temp, control=eff_ctrl)
 
-flfs_prop <- run_prop[["fisheries"]]
-biols_prop <- run_prop[["biols"]]
+flfs <- hind_run[["fisheries"]]
+biols <- hind_run[["biols"]]
 
 # Build a big data.frame of results - pretty horrible - dump into funcs.R?
 # Observed, estimated with prop error, estimated with diff error
 
 pdat <- rbind(
-cbind(metric="prop_hat", stock="Ple", fishery="BT2",as.data.frame(landings(flfs_prop[["BT2"]][[1]]))) ,
+cbind(metric="hat", stock="Ple", fishery="BT2",as.data.frame(landings(flfs[["BT2"]][[1]]))) ,
 cbind(metric="obs", stock="Ple", fishery="BT2",as.data.frame(obslan_bt2_ple)),
-cbind(metric="prop_hat", stock="Ple", fishery="TR1",as.data.frame(landings(flfs_prop[["TR1"]][[1]]))),
+cbind(metric="hat", stock="Ple", fishery="TR1",as.data.frame(landings(flfs[["TR1"]][[1]]))),
 cbind(metric="obs", stock="Ple", fishery="TR1",as.data.frame(obslan_tr1_ple)),
-cbind(metric="prop_hat", stock="Sol", fishery="BT2",as.data.frame(landings(flfs_prop[["BT2"]][[2]]))),
+cbind(metric="hat", stock="Sol", fishery="BT2",as.data.frame(landings(flfs[["BT2"]][[2]]))),
 cbind(metric="obs", stock="Sol", fishery="BT2",as.data.frame(obslan_bt2_sol)),
-cbind(metric="prop_hat", stock="Sol", fishery="TR1",as.data.frame(landings(flfs_prop[["TR1"]][[2]]))),
+cbind(metric="hat", stock="Sol", fishery="TR1",as.data.frame(landings(flfs[["TR1"]][[2]]))),
 cbind(metric="obs", stock="Sol", fishery="TR1",as.data.frame(obslan_tr1_sol)))
 
 # Cut off first year and unwanted columns
@@ -363,19 +371,19 @@ p + xlab("Year") + ylab("Landings")
 ggplot(effbygearyear, aes(x=year, y=Effective.Effort)) + geom_line(aes(colour=regulated.gear))
 
 # Biomass
-tsb <- get_tsb(run_prop[["biols"]][c("ple","sol")])
+tsb <- get_tsb(hind_run[["biols"]][c("ple","sol")])
 ggplot(subset(as.data.frame(tsb), year>2004), aes(x=year, y=data)) + geom_line() + facet_wrap(~qname, scales="free", ncol=1)
 
-ssb <- get_ssb(run_prop[["biols"]][c("ple","sol")])
+ssb <- get_ssb(hind_run[["biols"]][c("ple","sol")])
 ggplot(subset(as.data.frame(ssb), year>2004), aes(x=year, y=data)) + geom_line() + facet_wrap(~qname, scales="free", ncol=1)
 
 # F
-pf_ple_bt2 <- get_f(run_prop, fn=1, cn=1, bn=1, age_range = range(ple)[c("minfbar","maxfbar")])
-pf_ple_tr1 <- get_f(run_prop, fn=2, cn=1, bn=1, age_range = range(ple)[c("minfbar","maxfbar")])
+pf_ple_bt2 <- get_f(hind_run, fn=1, cn=1, bn=1, age_range = range(ple)[c("minfbar","maxfbar")])
+pf_ple_tr1 <- get_f(hind_run, fn=2, cn=1, bn=1, age_range = range(ple)[c("minfbar","maxfbar")])
 f_ple <- pf_ple_bt2 + pf_ple_tr1
 
-pf_sol_bt2 <- get_f(run_prop, fn=1, cn=2, bn=2, age_range = range(sol)[c("minfbar","maxfbar")])
-pf_sol_tr1 <- get_f(run_prop, fn=2, cn=2, bn=2, age_range = range(sol)[c("minfbar","maxfbar")])
+pf_sol_bt2 <- get_f(hind_run, fn=1, cn=2, bn=2, age_range = range(sol)[c("minfbar","maxfbar")])
+pf_sol_tr1 <- get_f(hind_run, fn=2, cn=2, bn=2, age_range = range(sol)[c("minfbar","maxfbar")])
 f_sol <- pf_sol_bt2 + pf_sol_tr1
 
 rec(biols[["sol"]])
@@ -385,14 +393,15 @@ biols[["sol"]]@rec@model
 
 solcpp <- as(biols[["sol"]], "FLBiolcpp")
 
-run_prop[["biols"]][["sol"]]@n
+hind_run[["biols"]][["sol"]]@n
 
 # Save hindcast and SR objects
-fisheries_hind <- run_prop[["fisheries"]]
-biols_hind <- run_prop[["biols"]]
+fisheries_hind <- hind_run[["fisheries"]]
+biols_hind <- hind_run[["biols"]]
 
 
-save(fisheries_hind, biols_hind, srple1, srsol1, srtur1, FCB, file="../data/hindcast_om.Rdata")
+#save(fisheries_hind, biols_hind, srple1, srsol1, srtur1, FCB, file="../data/hindcast_om.Rdata")
+save.image("../data/hindcast/hind_dump.Rdata")
 
 
 

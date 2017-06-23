@@ -51,7 +51,7 @@ extend_flbiols <- function(flbs, final_year, nyears=3){
 
 extend_flfisheries <- function(flfs, final_year, nyears=3){
     # last available year - not to be confused with final_year
-    last_year <- as.numeric(dimnames(flbs[[1]]@n)$year[length(dimnames(flbs[[1]]@n)$year)])
+    last_year <- as.numeric(dimnames(flfs[[1]][[1]]@landings.n)$year[length(dimnames(flfs[[1]][[1]]@landings.n)$year)])
     mean_years <- ac((last_year - nyears + 1):last_year)
     future_years <- ac((last_year+1):final_year)
     new_flfs <- lapply(flfs, function(flf){

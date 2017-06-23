@@ -1,5 +1,7 @@
 ---
-title: "A mixed flatfish fisheries application in FLasher"
+title: |
+  | A mixed flatfish fisheries application in FLasher
+  | Very draft!
 author: |
   | Finlay Scott, Iago Mosqueira
   | (European Commission Joint Research Center)
@@ -25,14 +27,19 @@ abstract:
 license: European Union Public Licence (EUPL) V.1.1
 ---
 
-```{r, librariesAndOptions}
+```{r, librariesAndOptions, echo=FALSE}
 library(FLasher)
-library(ggplotFL)
+library(ggplot2)
 library(knitr)
-opts_chunk$set(dev='png', cache=FALSE, fig.width=6, fig.height=6, tidy=TRUE, dpi=300, fig.pos='!h')
+library(plyr)
+opts_chunk$set(dev='png', cache=FALSE, fig.width=8, fig.height=8, tidy=TRUE, dpi=300, fig.pos='!h')
 options(width=60)
 ```
 
+```{r, loadHindcast, echo=FALSE}
+load("../data/hindcast/hind_dump.Rdata")
+source("../src/funcs.R")
+```
 
 # Introduction
 
@@ -79,7 +86,7 @@ The length-weight relationship is defined by *a* and *b* paramaters in a nonline
 lwparams <- data.frame(Species = c("Plaice", "Sole", "Turbot", "Brill"),
     a = c(0.00890, 0.00762, 0.01508, 0.02492),
     b = c(3.053, 3.068, 3.090, 2.857),
-    Source = "Bedford et al. (1986)")
+    Source = "Bedford *et al.* (1986)")
 colnames(lwparams) = c("Species", "*a*", "*b*", "Source")
 ```
 
@@ -113,34 +120,285 @@ kable(matparams, caption="Maturity parameters for the four stocks")
 
 The four flatfish species that in this study are caught by vessels using different gears. Time-series of annual fishing effort and landings for these fleets are available through the STECF website. The species are mainly caught by BT2 and TR1
 
-  
+## Fishing fleets
+
+Two fisheries were considered: BT2 and TR1. TR1 predominantly targets round fish with flatfish being taken as a bycatch.
+The proportion of total catches (landings?) of each species taken by each fleet is (what time period?):
+
+```{r, catchprop, echo=FALSE}
+catchprop <- data.frame(Fishery = c("BT2", "TR1"),
+                        Plaice = c(0.50, 0.24),
+                        Sole = c(0.87, 0.00),
+                        Brill = c(0.75, 0.06),
+                        Turbot = c(0.69, 0.1))
+```
+
+```{r, catchpropTable, echo=FALSE, results='asis'}
+kable(catchprop, caption="Proportions of the total catch for each species taken by the two fisheries.")
+```
+
+```{r, lanProp, echo=FALSE}
+# This is landings - not catches - props differ to those above
+propLan <- ddply(lanbygearyear, .(species, year), function(x){
+    x <- cbind(x, propLandings = x$Landings / sum(x$Landings))
+    return(x)})
+meanPropLan <- ddply(propLan, .(species, regulated.gear), summarise, meanPropLan = mean(propLandings))
+```
+
+```{r, plotEffort, fig.width=8, fig.height=4, echo=FALSE, fig.cap="Effective effort of the two fisheries over time."}
+ggplot(subset(effbygearyear, regulated.gear %in% c("BT2", "TR1")), aes(x=year, y=Effective.Effort)) + geom_line(aes(colour=regulated.gear))
+```
+
+## Model set up
+
+The simulations are set up that so that each fishery is represented using an *FLFishery* object. An *FLFishery* comprises a series of *FLCatch* objects, one for each stock that is fished by the *FLFishery*.
+Each stock is represented by an *FLBiol* object.
+
+
+```{r, FCB, echo=FALSE}
+FCB <- matrix(c(rep(c(1,2), each=4), rep(c(1:4),4)),ncol=3,byrow=F)
+fisheryNames <- c("BT2", "TR1")
+biolNames <- c("Plaice", "Sole", "Turbot", "Brill")
+catchNames <- c(paste(fisheryNames[1], c("PLE", "SOL", "TUR", "BLL"), sep=" "), paste(fisheryNames[2], c("PLE", "SOL", "TUR", "BLL"), sep=" "))
+fcb_drawing <- FCBDrawing(FCB, fisheryNames=fisheryNames, catchNames=catchNames, biolNames=biolNames)
+# Adjust CEX
+fcb_drawing@catchBlocks <- lapply(fcb_drawing@catchBlocks, function(cb){
+           cb@name_cex <- 0.45
+           return(cb)})
+fcb_drawing@biolBlocks <- lapply(fcb_drawing@biolBlocks, function(bb){
+           bb@name_cex <- 0.60
+           return(bb)})
+```
+
+```{r, drawFCB, out.width="90%", echo=FALSE, fig.cap="Schematic of the model set up. *FLFishery* objects are the top row. *FLCatch* objects are the middle row. *FLBiol* objects are the bottom row."}
+draw(fcb_drawing)
+```
 
 ## Conditioning
 
+Internally, fishing mortality, *F* is calculated as: $F = Selectivty * Q * Effort$, where *Selectivity* ranges between 0 and 1, *Q* is the catchability and *Effort* is the fishing effort.
+*F* and *Selectivity* are age structured.
+Selectivity and catchability is modelled at the *FLCatch* level. Fishing effort is modelled at the *FLFishery* level so that each *FLCatch* object in a fishery has the same amount of effort.
 
-## Hindcasting
+Of these parameters, the catchability parameter, *Q*, is the most difficult to estimate.
+Selectivity can be estimated from observed data or fixed according to the gear type and effort is the metric that drives the projections (either by fixing it at the desired llevel or found to achieve certain targets).
 
-# Results
+Here, the eight *Q* parameters (one for each *FLCatch* are estimated by performing a hindcast projection.
+The mixed fishery is projected using the known fishing efforts of the *BT2* and *TR1* fisheries to drive the fishing activity.
+The selectivity of each *FLCatch* has already been estimated (REF where in report).
+The resulting simulated mean *F* and catches are compared to those from the single species stock assessments.
+The *Q*s which minimise the difference, averaged over the hindcasting time period, are used for the projections.
+
+The hindcast projection was run for the years 2004 to 2015 (the years for which effort data was available).
+The data comparisons are performed for the years 2010 to 2015 to allow any transient behaviour at the start of the projection to settle down.
+
+The initial populations were taken from the stock assessment results.
+The recruitment of the stocks was fixed at the estimated recruitment from the stock assessment results.
+
+Only plaice and sole were considered at this point.
+
+## Hindcast results
+
+
+```{r, finalQ, echo=FALSE}
+finalQTab <- data.frame(Catch = c("BT2 PLE", "BT2 SOL", "TR1 PLE", "TR1 SOL"),
+           Q = finalq)
+```
+
+The final estimated Qs for plaice and sole are shown in Table X.
+Note that the catchability of Sole for BT2 is an order higher than for TR1. This reflects the distribution of catches between TR1 and BT2 (see Table X).
+
+```{r, finalQTable, echo=FALSE, results='asis'}
+kable(finalQTab, caption="Estimated Qs from the hindcast")
+```
+
+Projecting forward with the observed effort and the estimated Qs gives simulated landings that are similar to the observed landings:
+
+```{r, hindLand, echo=FALSE, fig.height=4, fig.cap="Estimated (hat) and observed (obs) landings of plaice and sole from the hindcast projection with fitted Q. Q was fitted over the period 2010 to 2015"}
+pdat <- rbind(
+cbind(metric="hat", stock="Ple", fishery="BT2",as.data.frame(landings(fisheries_hind[["BT2"]][[1]]))) ,
+cbind(metric="obs", stock="Ple", fishery="BT2",as.data.frame(obslan_bt2_ple)),
+cbind(metric="hat", stock="Ple", fishery="TR1",as.data.frame(landings(fisheries_hind[["TR1"]][[1]]))),
+cbind(metric="obs", stock="Ple", fishery="TR1",as.data.frame(obslan_tr1_ple)),
+cbind(metric="hat", stock="Sol", fishery="BT2",as.data.frame(landings(fisheries_hind[["BT2"]][[2]]))),
+cbind(metric="obs", stock="Sol", fishery="BT2",as.data.frame(obslan_bt2_sol)),
+cbind(metric="hat", stock="Sol", fishery="TR1",as.data.frame(landings(fisheries_hind[["TR1"]][[2]]))),
+cbind(metric="obs", stock="Sol", fishery="TR1",as.data.frame(obslan_tr1_sol)))
+# Cut off first year and unwanted columns
+pdat <- subset(pdat, year > 2004)
+pdat <- pdat[,c("metric", "stock", "fishery", "year", "data")]
+p <- ggplot(pdat, aes(x=year, y=data)) + geom_line(aes(colour=metric))+ facet_grid(stock~fishery, scales="free")
+p + xlab("Year") + ylab("Landings")
+```
+
+# Future projections
+
+The conditioned operating model can be projected into the future using variety of targets.
+Here we run example projections.
+
+## Set up future stock
+
+The *FLFishery* and *FLBiol* are set up into the future. The future stock weights at age, maturity, natural mortality etc are based on the mean of the final 3 years of observed data (2013 to 2015).
+
+We assume that in the future, there are no discards, i.e. landings = catches.
+
+The hindcast projections used the recruitment estimated from the stock assessments.
+For the future projections, stock-recruitment relationships were fitted to the stock assessment results and used to simulate future recruitment (see above).
+
+```{r, setUpFuture, echo=FALSE}
+final_year <- 2030
+biols_proj <- extend_flbiols(biols_hind, final_year)
+fisheries_proj <- extend_flfisheries(fisheries_hind, final_year)
+
+fisheries_proj[[1]][[1]]@landings.n[,ac(2016:2030)] <- 1
+fisheries_proj[[2]][[1]]@landings.n[,ac(2016:2030)] <- 1
+fisheries_proj[[1]][[2]]@landings.n[,ac(2016:2030)] <- 1
+fisheries_proj[[2]][[2]]@landings.n[,ac(2016:2030)] <- 1
+fisheries_proj[[1]][[1]]@discards.n[,ac(2016:2030)] <- 0
+fisheries_proj[[2]][[1]]@discards.n[,ac(2016:2030)] <- 0
+fisheries_proj[[1]][[2]]@discards.n[,ac(2016:2030)] <- 0
+fisheries_proj[[2]][[2]]@discards.n[,ac(2016:2030)] <- 0
+
+# Fix recruitment in biols
+biols_proj[["ple"]]@rec@model <- srple1@model
+biols_proj[["ple"]]@rec@params <- srple1@params
+biols_proj[["sol"]]@rec@model <- srsol1@model
+biols_proj[["sol"]]@rec@params <- srsol1@params
+biols_proj[["tur"]]@rec@model <- srtur1@model
+biols_proj[["tur"]]@rec@params <- srtur1@params
+biols_proj[["bll"]]@rec@model <- srtur1@model
+biols_proj[["bll"]]@rec@params <- srtur1@params
+```
+
+```{r, getmsy, echo=FALSE}
+library(FLBRP)
+# Turn off discards
+#ple_ass_nodisc <- ple_ass
+#ple_ass_nodisc@discards.n[] <- 0
+#ple_ass_nodisc@discards.wt[] <- 0
+#ple_ass_nodisc@discards[] <- 0
+#plebrp <- brp(FLBRP(ple_ass_nodisc, sr=list(model=srple1@model, params=srple1@params)))
+#ple_msy <- c(refpts(plebrp)["msy", "yield"])
+#sol_ass_nodisc <- sol_ass
+#sol_ass_nodisc@discards.n[] <- 0
+#sol_ass_nodisc@discards.wt[] <- 0
+#sol_ass_nodisc@discards[] <- 0
+#solbrp <- brp(FLBRP(sol_ass_nodisc, sr=list(model=srsol1@model, params=srsol1@params)))
+#sol_msy <- c(refpts(solbrp)["msy", "yield"])
+plemsy <- 185444.1
+solmsy <- 19260.5
+```
+
+The estimated MSYs for plaice and sole using the fitted stock recruitment relationships are `r format(round(plemsy,2),scientific=FALSE)` and `r format(round(solmsy,2),scientific=FALSE)`.
+It is not possible to achieve both MSYs at the same time.
+We can project the operating model to hit one MSY or the other.
+As there are two *FLFisheries* fishing each stock, we have to set another constraint for the projection (otherwise there are an infinite number of ways for the two fisheries to hit the MSY target between them).
+Here we fix the ratio of landings between them based on the historical ratio from the simulated hindcast (similar to using a relative stability). The mean ratio of the years 2013 to 2015 are used. These ratios are:
+
+```{r, relStab, echo=FALSE}
+total_ple <- (catch(fisheries_hind[["BT2"]][[1]]) + catch(fisheries_hind[["TR1"]][[1]]))
+total_sol <- (catch(fisheries_hind[["BT2"]][[2]]) + catch(fisheries_hind[["TR1"]][[2]]))
+bt2_ple_prop <- mean((catch(fisheries_hind[["BT2"]][[1]]) / total_ple)[,ac(2013:2015)])
+tr1_ple_prop <- 1 - bt2_ple_prop
+bt2_sol_prop <- mean((catch(fisheries_hind[["BT2"]][[2]]) / total_sol)[,ac(2013:2015)])
+tr1_sol_prop <- 1 - bt2_sol_prop
+relStabTab <- data.frame(Fishery = c("BT2", "TR1"),
+                           Plaice = c(bt2_ple_prop,tr1_ple_prop),
+                           Sole = c(bt2_sol_prop,tr1_sol_prop))
+```
+
+```{r, relStabTable, echo=FALSE, results='asis'}
+kable(relStabTab, caption="Mean proportion of hindcast simulated catches taken by the fisheries")
+```
+
+<!--
+## Projecting at plaice MSY
+
+```{r, projPleMSY, echo=FALSE}
+proj_years <- 2016:2030
+# Make effort control
+eff_ctrldf1 <- data.frame(year=proj_years, quant="landings", fishery=NA, catch=NA, biol=1, value=plemsy, relYear=NA, relFishery=NA, relCatch=NA)
+eff_ctrldf2 <- data.frame(year=proj_years, quant="landings", fishery=1, catch=1, biol=NA, value=bt2_ple_prop / tr1_ple_prop, relYear=proj_years, relFishery=2, relCatch=1)
+eff_ctrldf <- rbind(eff_ctrldf1, eff_ctrldf2)
+eff_ctrl <- fwdControl(eff_ctrldf)
+eff_ctrl@FCB <- FCB
+# Test run
+plerun <- fwd(object=biols_proj, fishery=fisheries_proj, control=eff_ctrl)
+fisheries_plemsy <- plerun[["fisheries"]]
+```
+
+```{r, plotPleMSY, fig.height=4, echo=FALSE, fig.cap="Resulting total landings from projecting the operating model at plaice MSY. Dashed line is the MSY."}
+total_ple <- (landings(fisheries_plemsy[["BT2"]][[1]]) + landings(fisheries_plemsy[["TR1"]][[1]]))
+total_sol <- (landings(fisheries_plemsy[["BT2"]][[2]]) + landings(fisheries_plemsy[["TR1"]][[2]]))
+pdat <- rbind(cbind(stock="Plaice", metric = "Total landings", as.data.frame(total_ple)),
+cbind(stock="Sole", metric = "Total landings", as.data.frame(total_sol)))[,c("stock","metric","year","data")]
+msy_dat <- rbind(data.frame(stock="Plaice", year=proj_years, data=plemsy),
+    data.frame(stock="Sole", year=proj_years, data=solmsy))
+p <- ggplot(pdat, aes(x=year, y=data)) + geom_line() + facet_wrap(~stock)
+p + geom_line(data=msy_dat, linetype=2) + ylab("Total landings")
+
+```
+-->
+
+## Projecting at sole MSY
+
+
+Projecting the operating model with the sole MSY, and keeping the relative sole landings between BT2 and TR1 constant (almost all the landings are from BT2), results in the landings of plaice initially being below the plaice MSY before rising above it.
+
+The sole catches show a decline at the end implying that the the estimated MSY is not sustainable (maybe because the MSY is calculated using the stock assessment which is different to the operating model stock.
+
+
+
+```{r, projSoleMSY, echo=FALSE}
+proj_years <- 2016:2030
+# Make effort control
+eff_ctrldf1 <- data.frame(year=proj_years, quant="catch", fishery=NA, catch=NA, biol=2, value=solmsy, relYear=NA, relFishery=NA, relCatch=NA)
+eff_ctrldf2 <- data.frame(year=proj_years, quant="catch", fishery=1, catch=2, biol=NA, value=bt2_sol_prop / tr1_sol_prop, relYear=proj_years, relFishery=2, relCatch=2)
+eff_ctrldf <- rbind(eff_ctrldf1, eff_ctrldf2)
+eff_ctrl <- fwdControl(eff_ctrldf)
+eff_ctrl@FCB <- FCB
+# Test run
+solrun <- fwd(object=biols_proj, fishery=fisheries_proj, control=eff_ctrl)
+fisheries_solmsy <- solrun[["fisheries"]]
+biols_solmsy <- solrun[["biols"]]
+```
+
+```{r, plotSolMSY, fig.height=4, echo=FALSE, fig.cap="Resulting total landings from projecting the operating model at sole MSY. Dashed line is the MSY."}
+total_ple <- (catch(fisheries_solmsy[["BT2"]][[1]]) + catch(fisheries_solmsy[["TR1"]][[1]]))
+total_sol <- (catch(fisheries_solmsy[["BT2"]][[2]]) + catch(fisheries_solmsy[["TR1"]][[2]]))
+pdat <- rbind(cbind(stock="Plaice", metric = "Total catch", as.data.frame(total_ple)),
+cbind(stock="Sole", metric = "Total catch", as.data.frame(total_sol)))[,c("stock","metric","year","data")]
+msy_dat <- rbind(data.frame(stock="Plaice", year=proj_years, data=plemsy),
+    data.frame(stock="Sole", year=proj_years, data=solmsy))
+p <- ggplot(pdat, aes(x=year, y=data)) + geom_line() + facet_wrap(~stock)
+p + geom_line(data=msy_dat, linetype=2) + ylab("Total catch")
+
+
+#biols_solmsy[[2]]@n
+
+# Get Fs
+#get_f(solrun, f=1,c=2,b=2)
+
+```
+
 					
 					
 # Discussion
 
 
-- *L*<sub>inf</sub> and *K* are assumed fixed in time
+* *L~inf~* and *K* are assumed fixed in time
+* Need to add uncertainty
 					
 
 
 # References
-- Bedford, B. C., Woolner, L.E., Jones, B. W. (1986) Length-weight relationships for commercial fish species and conversion factors for various presentations. Fisheries research data report No. 10., MAFF Directorate for fisheries research. 41 pp.
-- De Veen J. (1976) On changes in some biological parameters in the North Sea sole (Solea solea L.). ICES Journal of Marine Science 37, 60-90.  
-- Gillis, D. M., Rijnsdorp, A.D., and Poos, J. J. 2008. Behavioral inferences from the statistical distribution of commercial catch: patterns of targeting
-in the landings of the Dutch beam trawler fleet. Canadian Journal of Fisheries and Aquatic Sciences, 65: 27-37.
-- Grift, R.E., Rijnsdorp, A.D., Barot, S., Heino, M., Dieckmann, U. (2003) Fisheries-induced trends in reaction norms for maturation in North Sea plaice. Marine Ecology Progress Series 257, 247-257.
-- Kell, L. T., Mosqueira, I., Grosjean, P., Fromentin, J-M., Garcia, D., Hillary, R., Jardim, E., Mardle, S., Pastoors, M. A., Poos, J. J., Scott, F., and
-Scott, R. D. 2007. FLR: an open-source framework for the evaluation and development of management strategies. ICES Journal of
-Marine Science, 64, 640-646.
-- Poos, J. J., Bogaards, J. A., Quirijns, F. J., Gillis, D. M., and Rijnsdorp, A. D. 2010. Individual quotas, fishing effort allocation, and over-quota
-discarding in mixed fisheries. ICES Journal of Marine Science 67, 323-333.
-- van der Hammen T., Poos, J.J., van Overzee H.M.J., Heessen H.J.L., Magnusson A., Rijnsdorp, A.D. (2013) Population ecology of turbot and brill: What can we learn from two rare flatfish species? Journal of Sea Research 84, 96-108
-- van Walraven, L., Mollet, F.M., van Damme, C.J.G., Rijnsdorp, A.D. (2010) Fisheries-induced evolution in growth, maturation and reproductive investment of the sexually dimorphic North Sea plaice (Pleuronectes platessa L.). Journal of Sea Research 64, 85-93.
+
+* Bedford, B. C., Woolner, L.E., Jones, B. W. (1986) Length-weight relationships for commercial fish species and conversion factors for various presentations. Fisheries research data report No. 10., MAFF Directorate for fisheries research. 41 pp.
+* De Veen J. (1976) On changes in some biological parameters in the North Sea sole (Solea solea L.). ICES Journal of Marine Science 37, 60-90.  
+* Gillis, D. M., Rijnsdorp, A.D., and Poos, J. J. 2008. Behavioral inferences from the statistical distribution of commercial catch: patterns of targeting in the landings of the Dutch beam trawler fleet. Canadian Journal of Fisheries and Aquatic Sciences, 65: 27-37.
+* Grift, R.E., Rijnsdorp, A.D., Barot, S., Heino, M., Dieckmann, U. (2003) Fisheries-induced trends in reaction norms for maturation in North Sea plaice. Marine Ecology Progress Series 257, 247-257.
+* Kell, L. T., Mosqueira, I., Grosjean, P., Fromentin, J-M., Garcia, D., Hillary, R., Jardim, E., Mardle, S., Pastoors, M. A., Poos, J. J., Scott, F., and Scott, R. D. 2007. FLR: an open-source framework for the evaluation and development of management strategies. ICES Journal of Marine Science, 64, 640-646.
+* Poos, J. J., Bogaards, J. A., Quirijns, F. J., Gillis, D. M., and Rijnsdorp, A. D. 2010. Individual quotas, fishing effort allocation, and over-quota discarding in mixed fisheries. ICES Journal of Marine Science 67, 323-333.
+* van der Hammen T., Poos, J.J., van Overzee H.M.J., Heessen H.J.L., Magnusson A., Rijnsdorp, A.D. (2013) Population ecology of turbot and brill: What can we learn from two rare flatfish species? Journal of Sea Research 84, 96-108
+* van Walraven, L., Mollet, F.M., van Damme, C.J.G., Rijnsdorp, A.D. (2010) Fisheries-induced evolution in growth, maturation and reproductive investment of the sexually dimorphic North Sea plaice (Pleuronectes platessa L.). Journal of Sea Research 64, 85-93.
 
